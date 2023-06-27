@@ -1,5 +1,4 @@
-const express = require('express');
-const app = express();
+const app = require('./app')
 
 app.listen(9090, (err) => {
     if (err) console.log(err);
