@@ -44,7 +44,44 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
         .then(({body}) => {
-            expect(body).toEqual({endpoints})
+            expect(body.endpoints).toEqual(endpoints)
         })
     })
 })
+
+describe('GET /api/articles/:article_id', () => {
+    test("200: GET: responds with an article object with properties of author, title, article_id, body, topic, created_at, votes, article_img_url", () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({body}) => {
+            const { article } = body;
+            expect(article).toHaveProperty('author', expect.any(String));
+            expect(article).toHaveProperty('title', expect.any(String));
+            expect(article).toHaveProperty('article_id', expect.any(Number));
+            expect(article).toHaveProperty('body', expect.any(String));
+            expect(article).toHaveProperty('topic', expect.any(String));
+            expect(article).toHaveProperty('created_at', expect.any(String));
+            expect(article).toHaveProperty('votes', expect.any(Number));
+            expect(article).toHaveProperty('article_img_url', expect.any(String));
+            })
+        })
+    })
+    test("404: ERROR: responds with an error when article_id is valid, but does not exist", () => {
+        return request(app)
+        .get('/api/articles/999999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Path not found')
+        })
+    })
+    test("400: ERROR: responds with an error when article id is an invalid type", () => {
+        return request(app)
+        .get('/api/articles/nonesense')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+// 
