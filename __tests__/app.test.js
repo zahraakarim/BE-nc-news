@@ -84,4 +84,42 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 
-// 
+describe('GET /api/articles', () => {
+    test("200: GET: responds with an articles array of article objects, each of which should have the properties author, title, article_id, topic, created_at, votes, article_img_url, comment_count", () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const {articles} = body
+            expect(articles).toHaveLength(13);
+            articles.forEach((article) => {
+                expect(article).toHaveProperty("author", expect.any(String));
+                expect(article).toHaveProperty("title", expect.any(String));
+                expect(article).toHaveProperty("article_id", expect.any(Number));
+                expect(article).toHaveProperty("topic", expect.any(String));
+                expect(article).toHaveProperty("created_at", expect.any(String));
+                expect(article).toHaveProperty("votes", expect.any(Number));
+                expect(article).toHaveProperty("article_img_url", expect.any(String));
+                expect(article).toHaveProperty("comment_count", expect.any(Number));
+                expect(article).not.toHaveProperty("body", expect.any(String));
+            })
+        })
+    })
+    test("200: GET: responds with array of article objects sorted in descending order by date", () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const {articles} = body
+            expect(articles).toBeSortedBy("created_at", { descending: true})
+        })
+    })
+    test("404: ERROR: responds with an error when path is valid but does not exist", () => {
+        return request(app)
+        .get('/api/nonesense')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Path not found')
+        })
+    })
+})
