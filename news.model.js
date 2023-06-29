@@ -1,7 +1,5 @@
+const { use } = require("./app");
 const db = require("./db/connection");
-const response = require("./app");
-const comments = require("./db/data/test-data/comments");
-const articles = require("./db/data/test-data/articles");
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((response) => {
@@ -38,5 +36,16 @@ exports.selectAllArticleComments = (article_id) => {
     )
     .then((response) => {
       return response.rows;
+    });
+};
+
+exports.addComment = (article_id, username, body) => {
+  return db
+    .query(
+      "INSERT INTO comments (article_id, author, body) VALUES ($1 , $2, $3) RETURNING *;",
+      [article_id, username, body]
+    )
+    .then((response) => {
+      return response.rows[0];
     });
 };

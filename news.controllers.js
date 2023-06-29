@@ -1,9 +1,11 @@
+const { response } = require("./app");
 const endpoints = require("./endpoints.json");
 const {
   selectTopics,
   selectArticleById,
   selectAllArticles,
   selectAllArticleComments,
+  addComment,
 } = require("./news.model");
 const { checkArticleExists } = require("./utils");
 
@@ -55,6 +57,18 @@ exports.getAllArticleComments = (req, res, next) => {
   ])
     .then(([comments]) => {
       res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  addComment(article_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);
