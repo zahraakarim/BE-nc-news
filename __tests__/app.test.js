@@ -172,3 +172,104 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: POST: respond with a 201 to show a successful post of a new comment", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I'm adding a new comment, let's goooo!",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          body: "I'm adding a new comment, let's goooo!",
+          votes: 0,
+          author: "butter_bridge",
+          article_id: 2,
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("201: POST: responds with a 201 and when given additional properties, ignores them and only looks at username and body key", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I'm adding a new comment, let's goooo!",
+        dad_joke: "What do you call a fish wearing a bowtie? Sofishticated.",
+        pronoun: "she/they",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          body: "I'm adding a new comment, let's goooo!",
+          votes: 0,
+          author: "butter_bridge",
+          article_id: 2,
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("400: ERROR: responds with an error when article_id type is invalid", () => {
+    return request(app)
+      .post("/api/articles/nonesense/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I'm adding a new comment, let's goooo!",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("400: ERROR: responds with an error when username is blank", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        body: "I'm adding a new comment, let's goooo!",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("400: ERROR: responds with an error when body is blank", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        username: "butter_bridge",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("404: ERROR: responds with an error when article_id type is valid but doesn't exist", () => {
+    return request(app)
+      .post("/api/articles/12345/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I'm adding a new comment, let's goooo!",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
+  });
+  test("404: ERROR: responds with an error when the username given does not exist", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        username: "zahraa",
+        body: "I'm adding a new comment, let's goooo!",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
+  });
+});
