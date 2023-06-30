@@ -324,6 +324,15 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  test("400: ERROR: responds with an error when inc_votes type is invalid", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "nonesense" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
   test("400: ERROR: responds with an error when inc_votes is blank", () => {
     return request(app)
       .patch("/api/articles/1")
