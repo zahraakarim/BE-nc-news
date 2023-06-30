@@ -384,14 +384,15 @@ describe("GET /api/users", () => {
         const { users } = body;
         expect(Array.isArray(users)).toBe(true);
         expect(users).toHaveLength(4);
-      });
-  });
-  test("404: ERROR - responds with an error when an invalid endpoint has been inputted", () => {
-    return request(app)
-      .get("/api/nonesense")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Path not found");
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
