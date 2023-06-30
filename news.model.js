@@ -26,10 +26,15 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
     "author",
     "comment_count",
   ];
+  const validTopics = ["cats", "mitch", "paper"];
   const validOrder = ["ASC", "DESC"];
   const capitalOrder = order.toUpperCase();
 
   if (!validOrder.includes(capitalOrder) || !validSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  if (topic && !validTopics.includes(topic)) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   }
 

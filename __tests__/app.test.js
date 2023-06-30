@@ -127,7 +127,7 @@ describe("GET /api/articles", () => {
   });
   test("200: GET: responds with an empty array when topic provided doesn't exist", () => {
     return request(app)
-      .get("/api/articles?topic=beans")
+      .get("/api/articles?topic=paper")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
@@ -169,13 +169,24 @@ test("400: ERROR: responds with an error when given an invalid sort_by query", (
       expect(body.msg).toBe("Bad Request");
     });
 });
-test("404: ERROR: responds with an error when path is valid but does not exist", () => {
+test("400: ERROR: responds with an error when given an invalid topic query", () => {
   return request(app)
-    .get("/api/nonesense")
-    .expect(404)
+    .get("/api/articles?topic=beans")
+    .expect(400)
     .then(({ body }) => {
-      expect(body.msg).toBe("Path not found");
+      expect(body.msg).toBe("Bad Request");
     });
+});
+
+describe("404: ERROR: responds with an error when path is valid but does not exist", () => {
+  test("404: ERROR: responds with an error when passed nonesense", () => {
+    return request(app)
+      .get("/api/nonesense")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
