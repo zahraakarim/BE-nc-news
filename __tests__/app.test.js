@@ -374,3 +374,24 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api/users", () => {
+  test("200: GET: responds with an array of objects, with each object having a property of username, name, and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(Array.isArray(users)).toBe(true);
+        expect(users).toHaveLength(4);
+      });
+  });
+  test("404: ERROR - responds with an error when an invalid endpoint has been inputted", () => {
+    return request(app)
+      .get("/api/nonesense")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
+  });
+});

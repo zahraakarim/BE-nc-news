@@ -8,6 +8,7 @@ const {
   addComment,
   updateArticleById,
   removeCommentById,
+  selectUsers,
 } = require("./news.model");
 const { checkArticleExists } = require("./utils");
 
@@ -94,6 +95,16 @@ exports.deleteComment = (req, res, next) => {
   removeCommentById(comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  selectUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch((err) => {
       next(err);
