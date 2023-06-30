@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+const { sort } = require("./db/data/test-data/articles");
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((response) => {
@@ -17,14 +18,35 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectAllArticles = () => {
-  return db
-    .query(
-      "SELECT articles.author, articles.article_id, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC;"
-    )
-    .then((response) => {
-      return response.rows;
-    });
+exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
+  const validSortBy = [
+    "title",
+    "votes",
+    "created_at",
+    "author",
+    "comment_count",
+  ];
+  const validOrder = ["ASC", "DESC"];
+  const capitalOrder = order.toUpperCase();
+
+  if (!validOrder.includes(capitalOrder) || !validSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  let queryString = `SELECT articles.author, articles.article_id, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
+  const topicQuery = [];
+  if (topic) {
+    queryString += ` WHERE topic = $1`;
+    topicQuery.push(topic);
+  }
+
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+  console.log(queryString);
+
+  return db.query(queryString, topicQuery).then((response) => {
+    return response.rows;
+  });
 };
 
 exports.selectAllArticleComments = (article_id) => {
