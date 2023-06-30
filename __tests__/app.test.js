@@ -114,7 +114,72 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("404: ERROR: responds with an error when path is valid but does not exist", () => {
+  test("200: GET: responds with array of article objects filtered by specified topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  test("200: GET: responds with an empty array when topic provided doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toEqual([]);
+      });
+  });
+  test("200: GET: responds with array of article objects sorted by order ASC", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("200: GET: responds with array of article objects sorted by votes in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("votes", { ascending: true });
+      });
+  });
+});
+test("400: ERROR: responds with an error when given an invalid order query", () => {
+  return request(app)
+    .get("/api/articles?order=123")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad Request");
+    });
+});
+test("400: ERROR: responds with an error when given an invalid sort_by query", () => {
+  return request(app)
+    .get("/api/articles?sort_by=bobbybrown")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad Request");
+    });
+});
+test("400: ERROR: responds with an error when given an invalid topic query", () => {
+  return request(app)
+    .get("/api/articles?topic=beans")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad Request");
+    });
+});
+
+describe("404: ERROR: responds with an error when path is valid but does not exist", () => {
+  test("404: ERROR: responds with an error when passed nonesense", () => {
     return request(app)
       .get("/api/nonesense")
       .expect(404)
