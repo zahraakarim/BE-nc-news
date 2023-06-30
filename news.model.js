@@ -1,4 +1,3 @@
-const { use } = require("./app");
 const db = require("./db/connection");
 
 exports.selectTopics = () => {
@@ -47,5 +46,22 @@ exports.addComment = (article_id, username, body) => {
     )
     .then((response) => {
       return response.rows[0];
+    });
+};
+
+exports.updateArticleById = (article_id, votes) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING*;",
+      [votes, article_id]
+    )
+    .then(({ rows }) => {
+      if (!rows[0]) {
+        return Promise.reject({
+          status: 404,
+          msg: "Path not found",
+        });
+      }
+      return rows[0];
     });
 };

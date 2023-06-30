@@ -7,6 +7,7 @@ const {
   getAllArticles,
   getAllArticleComments,
   postComment,
+  patchArticleById,
 } = require("./news.controllers");
 
 app.use(express.json());
@@ -22,6 +23,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getAllArticleComments);
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.patch("/api/articles/:article_id", patchArticleById);
 
 app.all("*", (_, res) => {
   res.status(404).send({ msg: "Path not found" });
