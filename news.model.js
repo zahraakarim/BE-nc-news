@@ -42,7 +42,6 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
   }
 
   queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
-  console.log(queryString);
 
   return db.query(queryString, topicQuery).then((response) => {
     return response.rows;
