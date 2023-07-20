@@ -27,9 +27,9 @@ app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id/comments", getAllArticleComments);
 
-app.get("/api/users", getUsers);
-
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.get("/api/users", getUsers);
 
 app.patch("/api/articles/:article_id", patchArticleById);
 
