@@ -26,7 +26,14 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
     "author",
     "comment_count",
   ];
-  const validTopics = ["cats", "mitch", "paper"];
+  const validTopics = [
+    "cats",
+    "mitch",
+    "paper",
+    "coding",
+    "football",
+    "cooking",
+  ];
   const validOrder = ["ASC", "DESC"];
   const capitalOrder = order.toUpperCase();
 
